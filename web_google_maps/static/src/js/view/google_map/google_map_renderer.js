@@ -460,8 +460,18 @@ odoo.define('web_google_maps.GoogleMapRenderer', function (require) {
         /**
          * Default location
          */
+         _geolocate: function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    this._handleGeolocationSuccess.bind(this),
+                    this._handleGeolocationFailed.bind(this),
+                    { enableHighAccuracy: true }
+                );
+            }
+        },
         _getDefaultCoordinate: function () {
-            return new google.maps.LatLng(0.0, 0.0);
+            return this._geolocate();
+//            return new google.maps.LatLng(0.0, 0.0);
         },
         /**
          * @override

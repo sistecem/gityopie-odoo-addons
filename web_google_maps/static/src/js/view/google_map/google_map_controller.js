@@ -302,8 +302,40 @@ odoo.define('web_google_maps.GoogleMapController', function (require) {
             const latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             const marker = new google.maps.Marker({
                 position: latLng,
+                fieldLat : position.coords.latitude,
+                fieldLng : position.coords.longitude,
                 map: this.renderer.gmap,
             });
+
+            const record = this.model.get(this.handle);
+//            const markers = this.renderer.getMarkers();
+            return this._rpc({
+                model: this.modelName,
+                method: 'write',
+                args: [
+                    record.res_ids,
+                    {
+                        [this.renderer.fieldLat]: marker.fieldLat,
+                        [this.renderer.fieldLng]: marker.fieldLng,
+                    },
+                ],
+            });
+//            .then(() => {
+//                this.is_marker_edit = true;
+//                this._updateMarkerButtons();
+//                this.renderer.setMarkerDraggable();
+//                });
+
+
+//                this.renderer.disableMarkerDraggable();
+//                this.reload();
+//                setTimeout(() => {
+//                    this.trigger_up('history_back');
+//                }, 2000);
+//            }
+//            );
+//            this.$buttons.find('.o_form_marker_buttons_actions').toggleClass('o_hidden', marker.latLng);
+//            this.$buttons.find('.o_form_marker_buttons_edit').toggleClass('o_hidden', !this.is_marker_edit);
             this.renderer.gmap.panTo(marker.getPosition());
             google.maps.event.addListenerOnce(this.renderer.gmap, 'idle', () => {
                 google.maps.event.trigger(this.renderer.gmap, 'resize');
